@@ -117,5 +117,4 @@ suite('Unit Tests', function() {
     assert.approximately(convertHandler.convert(input[0], input[1]), 11.0231, 0.1);
     done();
   });
-
 });

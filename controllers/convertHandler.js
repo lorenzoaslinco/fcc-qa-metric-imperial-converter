@@ -1,6 +1,6 @@
 function ConvertHandler() {
   this.getNum = function(input) {
-    let result = input.match(/[.d\d/]+/g) || ['1'];
+    let result = input.match(/[.d\/]+/g) || ['1'];
 
     if (result[0].includes('//') || result[0].split('/').length > 2) {
       return 'invalid number';
@@ -11,7 +11,7 @@ function ConvertHandler() {
     } catch (e) {
       return 'invalid number';
     }
-
+    
     return result;
   };
   
