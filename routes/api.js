@@ -4,30 +4,41 @@ const expect = require('chai').expect;
 const ConvertHandler = require('../controllers/convertHandler.js');
 
 module.exports = function (app) {
-  
+
   let convertHandler = new ConvertHandler();
 
-  app.get('/api/convert', (req, res) => {
-    try {
-      const { input } = req.query;
-      const initNum = convertHandler.getNum(input);
-      const initUnit = convertHandler.getUnit(input);
-  
-      if (initUnit === 'invalid unit' && initNum !== 'invalid number') {
-        return res.status(400).send('invalid unit');
-      } else if (initNum === 'invalid number' && initUnit !== 'invalid unit') {
-        return res.status(400).send('invalid number');
-      } else if (initNum === 'invalid number' && initUnit === 'invalid unit') {
-        return res.status(400).send('invalid number and unit');
+  app.route('/api/convert')
+    .get(async (req, res) => {
+      try {
+        let input = req.query.input;
+        let initNum = convertHandler.getNum(input);
+        let initUnit = convertHandler.getUnit(input);
+        let returnUnit = convertHandler.getReturnUnit(initUnit);
+        let spellout = convertHandler.spellOutUnit(returnUnit);
+        let returnNum = convertHandler.convert(initNum, initUnit);
+        let string = convertHandler.getString(initNum, initUnit, returnNum, returnUnit);
+
+        if (initUnit == "invalid unit" && initNum == "invalid number") {
+          return res.json('invalid number and unit');
+        }
+        if (initUnit == "invalid unit") {
+          return res.json("invalid unit");
+        }
+        if (initNum == "invalid number") {
+          return res.json("invalid number");
+        }
+
+        let response = {
+          initNum,
+          initUnit,
+          returnNum,
+          returnUnit,
+          string
+        };
+        return res.json(response);
       }
-    
-      const returnNum = convertHandler.convert(initNum, initUnit);
-      const returnUnit = convertHandler.getReturnUnit(initUnit);
-      const toString = convertHandler.getString(initNum, initUnit, returnNum, returnUnit);
-    
-      res.json({ initNum, initUnit, returnNum, returnUnit, string: toString });
-    } catch (err) {
-      return err;
-    }
-  });
+      catch (err) {
+        console.log(err);
+      }
+    });
 };
